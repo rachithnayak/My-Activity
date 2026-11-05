@@ -1,10 +1,14 @@
+import React from 'react'
+import Card from './components/card'
+import freelancers from './components/freelancers'
 
 function App() {
-  return(
-    <>
-      <h1>hello</h1>
-      <h2>world</h2>
-    </>
+  return (
+    <div className='card-list'>
+      {freelancers.map((freelancer) => (
+        <Card key={freelancer.id} {...freelancer} />
+      ))}
+    </div>
   )
 }
 
