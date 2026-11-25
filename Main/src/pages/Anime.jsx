@@ -25,7 +25,7 @@ function Anime() {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Could not load anime: {error}</p>;
-  
+
   return (
     <div className="p-4">
       <Link to="/">← Movies</Link>

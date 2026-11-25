@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useList } from "../context/ListContext";
+import { accent } from "../theme";
 
 const KEY = import.meta.env.VITE_TMDB_KEY;
 
@@ -61,7 +62,7 @@ function MovieDetails() {
             </button>
           ) : (
             <button
-              className="mt-4 rounded bg-red-600 px-4 py-2 text-white"
+              className={`mt-4 rounded px-4 py-2 text-white ${accent.movie}`}
               onClick={() =>
                 addItem({
                   id: movie.id,

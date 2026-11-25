@@ -2,16 +2,20 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getAnimeById } from "../api/jikan";
 import { useList } from "../context/ListContext";
+import { accent } from "../theme";
 
 function AnimeDetails() {
   const { id } = useParams();
   const [anime, setAnime] = useState(null);
-  const { addItem, removeItem, isInList } = useList();
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    getAnimeById(id).then(setAnime);
+    getAnimeById(id)
+      .then(setAnime)
+      .catch((err) => setError(err.message));
   }, [id]);
 
+  if (error) return <p>Could not load anime: {error}</p>;
   if (!anime) return <p>Loading...</p>;
 
   return (
@@ -43,7 +47,7 @@ function AnimeDetails() {
             </button>
           ) : (
             <button
-              className="mt-4 rounded bg-purple-600 px-4 py-2 text-white"
+              className={`mt-4 rounded px-4 py-2 text-white ${accent.anime}`}
               onClick={() =>
                 addItem({
                   id: anime.id,

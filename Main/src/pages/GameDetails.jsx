@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getGameById } from "../api/rawg";
 import { useList } from "../context/ListContext";
+import { accent } from "../theme";
 
 function GameDetails() {
   const { id } = useParams();
@@ -30,7 +31,9 @@ function GameDetails() {
         <div className="max-w-2xl">
           <h1 className="text-4xl font-bold">{game.title}</h1>
           <p className="mt-2">
-            {game.released} • ~{game.playtime} hrs • ⭐ {game.rating}
+            {game.released}
+            {game.playtime > 0 && ` • ~${game.playtime} hrs`}
+            {` • ⭐ ${game.rating}`}
           </p>
           <p className="mt-4">{game.description}</p>
 
@@ -43,7 +46,7 @@ function GameDetails() {
             </button>
           ) : (
             <button
-              className="mt-4 rounded bg-teal-600 px-4 py-2 text-white"
+              className={`mt-4 rounded px-4 py-2 text-white ${accent.game}`}
               onClick={() =>
                 addItem({
                   id: game.id,

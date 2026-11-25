@@ -2,10 +2,11 @@ import { NavLink } from "react-router-dom";
 import { useList } from "../context/ListContext";
 
 const links = [
-  { to: "/", label: "Movies" },
-  { to: "/anime", label: "Anime" },
-  { to: "/games", label: "Games" },
-  { to: "/list", label: "My List" },
+  { to: "/", label: "Home", active: "text-white" },
+  { to: "/movies", label: "Movies", active: "text-red-500" },
+  { to: "/anime", label: "Anime", active: "text-purple-400" },
+  { to: "/games", label: "Games", active: "text-teal-400" },
+  { to: "/list", label: "My List", active: "text-white" },
 ];
 
 function Nav() {
@@ -22,7 +23,7 @@ function Nav() {
           to={l.to}
           end={l.to === "/"}
           className={({ isActive }) =>
-            `text-center text-sm ${isActive ? "font-bold text-red-500" : "text-gray-300"}`
+            `text-center text-sm ${isActive ? `font-bold ${l.active}` : "text-gray-300"}`
           }
         >
           {l.label}

@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import Card from "../components/Card";
-import { Link } from "react-router-dom";
-import { useList } from "../context/ListContext";
 
 const KEY = import.meta.env.VITE_TMDB_KEY;
 const BASE = "https://api.themoviedb.org/3";
 
-// 1. toItem goes here: outside the component, under BASE
+const TABS = [
+  { id: "popular", label: "Popular" },
+  { id: "top_rated", label: "Top Rated" },
+  { id: "now_playing", label: "Now Playing" },
+];
+
 function toItem(m) {
   return {
     id: m.id,
@@ -18,91 +21,103 @@ function toItem(m) {
 }
 
 function Movies() {
-  const { list } = useList();
-  const [popular, setPopular] = useState([]);
-  const [newMovies, setNewMovies] = useState([]);
-  const [results, setResults] = useState([]);
+  const [tab, setTab] = useState("popular");
   const [query, setQuery] = useState("");
+  const [movies, setMovies] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // Fetch whenever the tab, the search text, or the page changes
   useEffect(() => {
-    Promise.all([
-      fetch(`${BASE}/movie/popular?api_key=${KEY}`).then((r) => r.json()),
-      fetch(`${BASE}/movie/now_playing?api_key=${KEY}`).then((r) => r.json()),
-    ]).then(([pop, now]) => {
-      // 2. these two lines replace setPopular(pop.results) and setNewMovies(now.results)
-      setPopular(pop.results.map(toItem));
-      setNewMovies(now.results.map(toItem));
-      setLoading(false);
-    });
-  }, []);
+    const url = query
+      ? `${BASE}/search/movie?api_key=${KEY}&query=${encodeURIComponent(query)}&page=${page}`
+      : `${BASE}/movie/${tab}?api_key=${KEY}&page=${page}`;
 
-  useEffect(() => {
-    if (!query) {
-      setResults([]);
-      return;
-    }
-    const timer = setTimeout(() => {
-      fetch(
-        `${BASE}/search/movie?api_key=${KEY}&query=${encodeURIComponent(query)}`,
-      )
-        .then((r) => r.json())
-        // 3. this line replaces .then((data) => setResults(data.results))
-        .then((data) => setResults(data.results.map(toItem)));
-    }, 500);
+    setLoading(true);
+    setError(null);
+
+    // wait 500ms only when searching (debounce), no wait for tabs
+    const timer = setTimeout(
+      () => {
+        fetch(url)
+          .then((r) => {
+            if (!r.ok) throw new Error(`TMDB error ${r.status}`);
+            return r.json();
+          })
+          .then((data) => {
+            const items = (data.results ?? []).map(toItem);
+            // page 1 replaces the list, later pages are added to the end
+            setMovies((prev) => (page === 1 ? items : [...prev, ...items]));
+            setTotalPages(data.total_pages ?? 1);
+          })
+          .catch((err) => setError(err.message))
+          .finally(() => setLoading(false));
+      },
+      query ? 500 : 0,
+    );
+
     return () => clearTimeout(timer);
-  }, [query]);
+  }, [tab, query, page]);
 
-  if (loading) return <p>Loading...</p>;
+  function changeTab(id) {
+    setTab(id);
+    setPage(1);
+    setMovies([]);
+  }
+
+  function changeQuery(text) {
+    setQuery(text);
+    setPage(1);
+    setMovies([]);
+  }
 
   return (
     <div className="p-4">
-      <Link to="/list" className="mb-4 inline-block underline">
-        My List ({list.length})
-      </Link>
-      <Link to="/anime" className="mb-4 ml-4 inline-block underline">
-        Anime
-      </Link>
-      <Link to="/games" className="mb-4 ml-4 inline-block underline">
-        Games
-      </Link>
       <input
-        className="mb-6 w-full rounded border p-2"
+        className="mb-4 w-full rounded border p-2"
         placeholder="Search movies..."
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => changeQuery(e.target.value)}
       />
 
       {query ? (
-        <>
-          <h2 className="mb-2 text-xl font-bold">Results for "{query}"</h2>
-          {results.length === 0 && <p>No movies found</p>}
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6">
-            {results.map((m) => (
-              <Card key={`${m.type}-${m.id}`} item={m} />
-            ))}
-          </div>
-        </>
+        <h2 className="mb-4 text-xl font-bold">Results for "{query}"</h2>
       ) : (
-        <>
-          <h2 className="mb-2 text-xl font-bold">Popular</h2>
-          <div className="mb-8 flex gap-4 overflow-x-auto">
-            {popular.map((m) => (
-              <div key={m.id} className="w-40 shrink-0">
-                <Card item={m} />
-              </div>
-            ))}
-          </div>
+        <div className="mb-4 flex gap-2">
+          {TABS.map((t) => (
+            <button
+              key={t.id}
+              onClick={() => changeTab(t.id)}
+              className={`rounded-full border px-4 py-1 text-sm ${
+                tab === t.id ? "bg-red-600 text-white" : "text-gray-300"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      )}
 
-          <h2 className="mb-2 text-xl font-bold">New Movies</h2>
-          <div className="flex gap-4 overflow-x-auto">
-            {newMovies.map((m) => (
-              <div key={m.id} className="w-40 shrink-0">
-                <Card item={m} />
-              </div>
-            ))}
-          </div>
-        </>
+      {error && <p>Could not load movies: {error}</p>}
+      {loading && page === 1 && <p>Loading...</p>}
+      {!loading && !error && movies.length === 0 && <p>No movies found</p>}
+
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6">
+        {movies.map((m, i) => (
+          <Card key={`${m.id}-${i}`} item={m} />
+        ))}
+      </div>
+
+      {movies.length > 0 && page < totalPages && (
+        <button
+          className="mx-auto mt-6 block rounded bg-red-600 px-6 py-2 text-white"
+          onClick={() => setPage(page + 1)}
+          disabled={loading}
+        >
+          {loading ? "Loading..." : "Load more"}
+        </button>
       )}
     </div>
   );

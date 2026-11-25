@@ -8,13 +8,13 @@ function Card({ item }) {
 
   return (
     <Link to={`/${path}/${item.id}`} className="group block">
-  <img
-    className="aspect-2/3 w-full rounded-xl object-cover transition group-hover:scale-105"
-    src={src}
-    alt={item.title}
-  />
-  <p className="mt-2 truncate text-sm">{item.title}</p>
-</Link>
+      <img
+        className="aspect-2/3 w-full rounded-xl object-cover transition group-hover:scale-105"
+        src={src}
+        alt={item.title}
+      />
+      <p className="mt-2 truncate text-sm">{item.title}</p>
+    </Link>
   );
 }
 
