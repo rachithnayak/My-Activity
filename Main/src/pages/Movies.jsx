@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 import MovieCard from "../components/MovieCard";
+import { Link } from "react-router-dom";
+import { useList } from "../context/ListContext";
 
 const KEY = import.meta.env.VITE_TMDB_KEY;
 const BASE = "https://api.themoviedb.org/3";
 
 function Movies() {
+  const { list } = useList();
   const [popular, setPopular] = useState([]);
   const [newMovies, setNewMovies] = useState([]);
   const [results, setResults] = useState([]);
@@ -43,6 +46,9 @@ function Movies() {
 
   return (
     <div className="p-4">
+      <Link to="/list" className="mb-4 inline-block underline">
+        My List ({list.length})
+      </Link>
       <input
         className="mb-6 w-full rounded border p-2"
         placeholder="Search movies..."
