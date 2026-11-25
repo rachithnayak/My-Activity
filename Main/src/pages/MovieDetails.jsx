@@ -52,10 +52,10 @@ function MovieDetails() {
           </p>
           <p className="mt-4">{movie.overview}</p>
 
-          {isInList(movie.id) ? (
+          {isInList(movie.id, "movie") ? (
             <button
               className="mt-4 rounded border px-4 py-2"
-              onClick={() => removeItem(movie.id)}
+              onClick={() => removeItem(movie.id, "movie")}
             >
               ✓ In your list (Remove)
             </button>

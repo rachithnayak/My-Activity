@@ -1,10 +1,21 @@
 import { useState, useEffect } from "react";
-import MovieCard from "../components/MovieCard";
+import Card from "../components/Card";
 import { Link } from "react-router-dom";
 import { useList } from "../context/ListContext";
 
 const KEY = import.meta.env.VITE_TMDB_KEY;
 const BASE = "https://api.themoviedb.org/3";
+
+// 1. toItem goes here: outside the component, under BASE
+function toItem(m) {
+  return {
+    id: m.id,
+    title: m.title,
+    poster: m.poster_path,
+    type: "movie",
+    rating: m.vote_average,
+  };
+}
 
 function Movies() {
   const { list } = useList();
@@ -14,19 +25,18 @@ function Movies() {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // 1. Load popular + new movies once, when the page opens
   useEffect(() => {
     Promise.all([
       fetch(`${BASE}/movie/popular?api_key=${KEY}`).then((r) => r.json()),
       fetch(`${BASE}/movie/now_playing?api_key=${KEY}`).then((r) => r.json()),
     ]).then(([pop, now]) => {
-      setPopular(pop.results);
-      setNewMovies(now.results);
+      // 2. these two lines replace setPopular(pop.results) and setNewMovies(now.results)
+      setPopular(pop.results.map(toItem));
+      setNewMovies(now.results.map(toItem));
       setLoading(false);
     });
   }, []);
 
-  // 2. Search whenever the text changes (waits 500ms after typing stops)
   useEffect(() => {
     if (!query) {
       setResults([]);
@@ -37,7 +47,8 @@ function Movies() {
         `${BASE}/search/movie?api_key=${KEY}&query=${encodeURIComponent(query)}`,
       )
         .then((r) => r.json())
-        .then((data) => setResults(data.results));
+        // 3. this line replaces .then((data) => setResults(data.results))
+        .then((data) => setResults(data.results.map(toItem)));
     }, 500);
     return () => clearTimeout(timer);
   }, [query]);
@@ -48,6 +59,12 @@ function Movies() {
     <div className="p-4">
       <Link to="/list" className="mb-4 inline-block underline">
         My List ({list.length})
+      </Link>
+      <Link to="/anime" className="mb-4 ml-4 inline-block underline">
+        Anime
+      </Link>
+      <Link to="/games" className="mb-4 ml-4 inline-block underline">
+        Games
       </Link>
       <input
         className="mb-6 w-full rounded border p-2"
@@ -62,7 +79,7 @@ function Movies() {
           {results.length === 0 && <p>No movies found</p>}
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6">
             {results.map((m) => (
-              <MovieCard key={m.id} movie={m} />
+              <Card key={`${m.type}-${m.id}`} item={m} />
             ))}
           </div>
         </>
@@ -72,7 +89,7 @@ function Movies() {
           <div className="mb-8 flex gap-4 overflow-x-auto">
             {popular.map((m) => (
               <div key={m.id} className="w-40 shrink-0">
-                <MovieCard movie={m} />
+                <Card item={m} />
               </div>
             ))}
           </div>
@@ -81,7 +98,7 @@ function Movies() {
           <div className="flex gap-4 overflow-x-auto">
             {newMovies.map((m) => (
               <div key={m.id} className="w-40 shrink-0">
-                <MovieCard movie={m} />
+                <Card item={m} />
               </div>
             ))}
           </div>

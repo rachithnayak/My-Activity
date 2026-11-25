@@ -16,13 +16,13 @@ export function ListProvider({ children }) {
     setList((prev) => [...prev, item]);
   }
 
-  function removeItem(id) {
-    setList((prev) => prev.filter((i) => i.id !== id));
-  }
+function removeItem(id, type) {
+  setList((prev) => prev.filter((i) => !(i.id === id && i.type === type)));
+}
 
-  function isInList(id) {
-    return list.some((i) => i.id === id);
-  }
+function isInList(id, type) {
+  return list.some((i) => i.id === id && i.type === type);
+}
 
   return (
     <ListContext.Provider value={{ list, addItem, removeItem, isInList }}>
