@@ -7,10 +7,14 @@ function Card({ item }) {
   const path = item.type === "movie" ? "movies" : item.type;
 
   return (
-    <Link to={`/${path}/${item.id}`}>
-      <img className="w-full rounded-lg" src={src} alt={item.title} />
-      <p className="mt-2 text-sm">{item.title}</p>
-    </Link>
+    <Link to={`/${path}/${item.id}`} className="group block">
+  <img
+    className="aspect-2/3 w-full rounded-xl object-cover transition group-hover:scale-105"
+    src={src}
+    alt={item.title}
+  />
+  <p className="mt-2 truncate text-sm">{item.title}</p>
+</Link>
   );
 }
 
