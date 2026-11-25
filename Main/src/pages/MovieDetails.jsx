@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import { useList } from "../context/ListContext";
 
 const KEY = import.meta.env.VITE_TMDB_KEY;
 
@@ -26,6 +27,8 @@ function MovieDetails() {
       });
   }, [id]);
 
+  const { addItem, removeItem, isInList } = useList();
+
   if (!movie) return <p>Loading...</p>;
 
   return (
@@ -48,6 +51,30 @@ function MovieDetails() {
             {movie.vote_average?.toFixed(1)}
           </p>
           <p className="mt-4">{movie.overview}</p>
+
+          {isInList(movie.id) ? (
+            <button
+              className="mt-4 rounded border px-4 py-2"
+              onClick={() => removeItem(movie.id)}
+            >
+              ✓ In your list (Remove)
+            </button>
+          ) : (
+            <button
+              className="mt-4 rounded bg-red-600 px-4 py-2 text-white"
+              onClick={() =>
+                addItem({
+                  id: movie.id,
+                  title: movie.title,
+                  poster: movie.poster_path,
+                  type: "movie",
+                  rating: movie.vote_average,
+                })
+              }
+            >
+              + Add to List
+            </button>
+          )}
 
           {trailer ? (
             <iframe
