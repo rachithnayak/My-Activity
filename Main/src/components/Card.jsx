@@ -10,7 +10,7 @@ function Card({ item }) {
     <Link to={`/${path}/${item.id}`} className="group block">
       <div className="relative overflow-hidden rounded-xl border border-white/10">
         <img
-          className="aspect-[2/3] w-full object-cover transition group-hover:scale-105"
+          className="aspect-2/3 w-full object-cover transition group-hover:scale-105"
           src={src}
           alt={item.title}
         />

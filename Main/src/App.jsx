@@ -14,7 +14,7 @@ function App() {
   return (
     <>
       <Nav />
-      <main className="pb-20 md:pb-0 md:pl-24">
+      <main className="pb-20 md:pb-0 md:pl-28">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/movies" element={<Movies />} />

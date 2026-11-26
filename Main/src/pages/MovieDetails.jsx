@@ -36,11 +36,11 @@ function MovieDetails() {
       {movie.backdrop_path && (
         <>
           <img
-            className="absolute inset-0 h-[28rem] w-full object-cover opacity-30"
+            className="absolute inset-0 h-112 w-full object-cover opacity-30"
             src={`https://image.tmdb.org/t/p/w1280${movie.backdrop_path}`}
             alt=""
           />
-          <div className="absolute inset-0 h-[28rem] bg-gradient-to-b from-transparent to-[#0a0508]" />
+          <div className="absolute inset-0 h-112 bg-linear-to-b from-transparent to-[#0a0508]" />
         </>
       )}
 

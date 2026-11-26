@@ -57,7 +57,7 @@ function MyList() {
             <div key={`${item.type}-${item.id}`}>
               <Link to={`/${path}/${item.id}`}>
                 <img
-                  className="aspect-[2/3] w-full rounded-xl object-cover"
+                  className="aspect-2/3 w-full rounded-xl object-cover"
                   src={src}
                   alt={item.title}
                 />

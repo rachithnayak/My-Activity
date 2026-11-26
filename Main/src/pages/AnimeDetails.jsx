@@ -24,11 +24,11 @@ function AnimeDetails() {
       {anime.poster && (
         <>
           <img
-            className="absolute inset-0 h-[28rem] w-full scale-110 object-cover opacity-30 blur-2xl"
+            className="absolute inset-0 h-112 w-full scale-110 object-cover opacity-30 blur-2xl"
             src={anime.poster}
             alt=""
           />
-          <div className="absolute inset-0 h-[28rem] bg-gradient-to-b from-transparent to-[#0a0508]" />
+          <div className="absolute inset-0 h-112 bg-linear-to-b from-transparent to-[#0a0508]" />
         </>
       )}
 
