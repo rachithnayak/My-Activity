@@ -8,6 +8,7 @@ import Games from "./pages/Games";
 import GameDetails from "./pages/GameDetails";
 import Home from "./pages/Home";
 import Nav from "./components/Nav";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
           <Route path="/game/:id" element={<GameDetails />} />
           <Route path="/list" element={<MyList />} />
         </Routes>
+        <Footer />
       </main>
     </>
   );
