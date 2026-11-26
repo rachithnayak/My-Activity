@@ -12,16 +12,22 @@ const TABS = [
 function MyList() {
   const { list, removeItem } = useList();
   const [filter, setFilter] = useState("all");
+  const [sort, setSort] = useState("recent");
+
+  const filtered =
+    filter === "all" ? list : list.filter((item) => item.type === filter);
 
   const shown =
-    filter === "all" ? list : list.filter((item) => item.type === filter);
+    sort === "recent"
+      ? [...filtered].reverse()
+      : [...filtered].sort((a, b) => a.title.localeCompare(b.title));
 
   return (
     <div className="p-4 md:p-8">
       <h1 className="text-3xl font-bold">My List</h1>
       <p className="mb-4 text-gray-400">{list.length} titles</p>
 
-      <div className="mb-6 flex flex-wrap gap-2">
+      <div className="mb-6 flex flex-wrap items-center gap-2">
         {TABS.map((t) => {
           const count =
             t.id === "all"
@@ -39,9 +45,27 @@ function MyList() {
             </button>
           );
         })}
+
+        <select
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+          className="ml-auto rounded-full border border-white/10 bg-black px-4 py-1 text-sm"
+        >
+          <option value="recent">Recently added</option>
+          <option value="az">A-Z</option>
+        </select>
       </div>
 
-      {list.length === 0 && <p>Your list is empty. Find something to add!</p>}
+      {list.length === 0 && (
+        <div className="mt-10 text-center">
+          <p className="mb-4 text-xl">
+            Your list is empty. Find something to add.
+          </p>
+          <Link to="/" className="rounded-full bg-red-600 px-6 py-2 text-white">
+            Go to Discover
+          </Link>
+        </div>
+      )}
       {list.length > 0 && shown.length === 0 && (
         <p>Nothing here yet in this category.</p>
       )}
@@ -54,20 +78,21 @@ function MyList() {
           const path = item.type === "movie" ? "movies" : item.type;
 
           return (
-            <div key={`${item.type}-${item.id}`}>
+            <div key={`${item.type}-${item.id}`} className="relative">
               <Link to={`/${path}/${item.id}`}>
                 <img
-                  className="aspect-2/3 w-full rounded-xl object-cover"
+                  className="aspect-2/3 w-full rounded-xl border border-white/10 object-cover"
                   src={src}
                   alt={item.title}
                 />
                 <p className="mt-2 truncate text-sm">{item.title}</p>
               </Link>
               <button
-                className="mt-1 text-xs text-red-400"
                 onClick={() => removeItem(item.id, item.type)}
+                className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-black/70 text-sm hover:bg-red-600"
+                aria-label={`Remove ${item.title}`}
               >
-                Remove
+                ✕
               </button>
             </div>
           );
