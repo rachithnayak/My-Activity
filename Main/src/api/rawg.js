@@ -11,6 +11,26 @@ function toItem(g) {
   };
 }
 
+export async function getGames({ ordering, page = 1, search = "", dates = "" }) {
+  const params = new URLSearchParams({
+    key: KEY,
+    page,
+    page_size: 20,
+    ordering,
+  });
+  if (search) params.set("search", search);
+  if (dates) params.set("dates", dates);
+
+  const res = await fetch(`${BASE}/games?${params}`);
+  if (!res.ok) throw new Error(`RAWG error ${res.status}`);
+  const json = await res.json();
+
+  return {
+    items: json.results.map(toItem),
+    hasMore: Boolean(json.next), // RAWG gives null when there is no next page
+  };
+}
+
 export async function getPopularGames() {
   const res = await fetch(`${BASE}/games?key=${KEY}&ordering=-added&page_size=20`);
   if (!res.ok) throw new Error(`RAWG error ${res.status}`);
