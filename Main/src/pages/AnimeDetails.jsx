@@ -8,6 +8,7 @@ function AnimeDetails() {
   const { id } = useParams();
   const [anime, setAnime] = useState(null);
   const [error, setError] = useState(null);
+  const { addItem, removeItem, isInList } = useList(); // ADD THIS
 
   useEffect(() => {
     getAnimeById(id)
@@ -34,7 +35,8 @@ function AnimeDetails() {
         <div className="max-w-2xl">
           <h1 className="text-4xl font-bold">{anime.title}</h1>
           <p className="mt-2">
-            {anime.year} • {anime.episodes} episodes • ⭐ {anime.rating}
+            {anime.year} {anime.episodes && `• ${anime.episodes} episodes`}{" "}
+            {anime.rating && `• ⭐ ${anime.rating}`}
           </p>
           <p className="mt-4">{anime.synopsis}</p>
 
