@@ -14,8 +14,8 @@ function Nav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 flex justify-around border-t bg-black p-3 text-white
-                 md:top-0 md:right-auto md:w-24 md:flex-col md:justify-start md:gap-8 md:border-r md:border-t-0"
+      className="fixed bottom-0 left-0 right-0 z-10 flex justify-around border-t border-white/10 bg-black/60 p-3 text-white backdrop-blur
+           md:top-0 md:right-auto md:w-24 md:flex-col md:justify-start md:gap-6 md:border-r md:border-t-0"
     >
       {links.map((l) => (
         <NavLink
@@ -23,7 +23,11 @@ function Nav() {
           to={l.to}
           end={l.to === "/"}
           className={({ isActive }) =>
-            `text-center text-sm ${isActive ? `font-bold ${l.active}` : "text-gray-300"}`
+            `rounded-xl px-2 py-2 text-center text-sm transition ${
+              isActive
+                ? `bg-white/10 font-bold ${l.active}`
+                : "text-gray-400 hover:text-white"
+            }`
           }
         >
           {l.label}

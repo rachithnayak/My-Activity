@@ -2,5 +2,9 @@
 
 body {
   background-color: #0a0508;
+  background-image:
+    radial-gradient(ellipse at top right, rgba(220, 38, 38, 0.25), transparent 50%),
+    radial-gradient(ellipse at bottom left, rgba(190, 18, 60, 0.15), transparent 50%);
+  background-attachment: fixed;
   color: #f5eaea;
 }
