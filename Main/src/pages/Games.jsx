@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Card from "../components/Card";
 import { getGames } from "../api/rawg";
+import { useNavigate } from "react-router-dom";
 
 const today = new Date().toISOString().slice(0, 10);
 
@@ -15,6 +16,14 @@ const TABS = [
   },
 ];
 
+const PLATFORMS = [
+  { id: "", label: "All" },
+  { id: "1", label: "PC" },
+  { id: "2", label: "PlayStation" },
+  { id: "3", label: "Xbox" },
+  { id: "7", label: "Switch" },
+];
+
 function Games() {
   const [tab, setTab] = useState(TABS[0]);
   const [query, setQuery] = useState("");
@@ -23,6 +32,8 @@ function Games() {
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [platform, setPlatform] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     setLoading(true);
@@ -34,6 +45,7 @@ function Games() {
           ordering: tab.ordering,
           dates: tab.dates,
           search: query,
+          platforms: platform,
           page,
         })
           .then(({ items, hasMore }) => {
@@ -47,7 +59,7 @@ function Games() {
     );
 
     return () => clearTimeout(timer);
-  }, [tab, query, page]);
+  }, [tab, query, page, platform]);
 
   function changeTab(t) {
     setTab(t);
@@ -59,6 +71,20 @@ function Games() {
     setQuery(text);
     setPage(1);
     setGames([]);
+  }
+
+  function changePlatform(id) {
+    setPlatform(id);
+    setPage(1);
+    setGames([]);
+  }
+
+  function pickRandom() {
+    console.log("games on screen:", games.length);
+    if (games.length === 0) return;
+    const pick = games[Math.floor(Math.random() * games.length)];
+    console.log("picked:", pick);
+    navigate(`/game/${pick.id}`);
   }
 
   return (
@@ -87,6 +113,27 @@ function Games() {
           ))}
         </div>
       )}
+
+      <div className="mb-4 flex flex-wrap gap-2">
+        {PLATFORMS.map((p) => (
+          <button
+            key={p.id}
+            onClick={() => changePlatform(p.id)}
+            className={`rounded-full border border-white/10 px-4 py-1 text-sm ${
+              platform === p.id ? "bg-teal-600 text-white" : "text-gray-300"
+            }`}
+          >
+            {p.label}
+          </button>
+        ))}
+      </div>
+
+      <button
+        onClick={pickRandom}
+        className="mb-4 rounded-full bg-teal-600 px-5 py-2 text-sm text-white"
+      >
+        🎲 Pick one for me
+      </button>
 
       {error && <p>Could not load games: {error}</p>}
       {loading && page === 1 && <p>Loading...</p>}

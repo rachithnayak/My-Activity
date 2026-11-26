@@ -11,7 +11,7 @@ function toItem(g) {
   };
 }
 
-export async function getGames({ ordering, page = 1, search = "", dates = "" }) {
+export async function getGames({ ordering, page = 1, search = "", dates = "", platforms = "" }) {
   const params = new URLSearchParams({
     key: KEY,
     page,
@@ -20,6 +20,7 @@ export async function getGames({ ordering, page = 1, search = "", dates = "" }) 
   });
   if (search) params.set("search", search);
   if (dates) params.set("dates", dates);
+  if (platforms) params.set("parent_platforms", platforms);
 
   const res = await fetch(`${BASE}/games?${params}`);
   if (!res.ok) throw new Error(`RAWG error ${res.status}`);
@@ -27,7 +28,7 @@ export async function getGames({ ordering, page = 1, search = "", dates = "" }) 
 
   return {
     items: json.results.map(toItem),
-    hasMore: Boolean(json.next), // RAWG gives null when there is no next page
+    hasMore: Boolean(json.next),
   };
 }
 
