@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import Card from "./Card";
+import ScrollRow from "./ScrollRow";
 
 function Row({ title, subtitle, items, loading, error, seeAllTo, bar, link }) {
   return (
@@ -20,13 +21,13 @@ function Row({ title, subtitle, items, loading, error, seeAllTo, bar, link }) {
       {loading && <p className="text-gray-400">Loading...</p>}
       {error && <p className="text-gray-400">Could not load: {error}</p>}
 
-      <div className="flex gap-4 overflow-x-auto pb-2">
+      <ScrollRow>
         {items.map((m) => (
           <div key={`${m.type}-${m.id}`} className="w-36 shrink-0 md:w-44">
             <Card item={m} />
           </div>
         ))}
-      </div>
+      </ScrollRow>
     </section>
   );
 }
