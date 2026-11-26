@@ -16,6 +16,26 @@ function toItem(a) {
   };
 }
 
+export async function getAnimeList({ sort, status = "", search = "", page = 1 }) {
+  const params = new URLSearchParams();
+  params.set("page[limit]", 20);
+  params.set("page[offset]", (page - 1) * 20);
+  if (search) params.set("filter[text]", search);
+  else {
+    params.set("sort", sort);
+    if (status) params.set("filter[status]", status);
+  }
+
+  const res = await fetch(`${BASE}/anime?${params}`, { headers: HEADERS });
+  if (!res.ok) throw new Error(`Kitsu error ${res.status}`);
+  const json = await res.json();
+
+  return {
+    items: json.data.map(toItem),
+    hasMore: Boolean(json.links?.next), // Kitsu gives no "next" link on the last page
+  };
+}
+
 export async function getTopAnime() {
   const res = await fetch(
     `${BASE}/anime?page[limit]=20&sort=popularityRank`,
